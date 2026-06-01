@@ -58,6 +58,7 @@
 
 pub mod chunker;
 pub mod config;
+pub mod context;
 pub mod embedding;
 pub mod error;
 pub mod fingerprint;
@@ -72,6 +73,7 @@ pub mod tools;
 pub mod types;
 
 pub use config::Config;
+pub use context::Context;
 pub use error::{GmemError, Result};
 pub use fingerprint::Fingerprint;
 pub use types::{Chunk, Link, Page, PageScope, Slug, Tag};

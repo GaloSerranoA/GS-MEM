@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use axum::body::Body;
 use axum::extract::{Path, Query, State};
@@ -16,9 +16,9 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::EnvFilter;
 
-use gsmem::{Config, GmemError, SqliteStorage};
+use gsmem::{Config, GmemError};
 
-pub type AppState = Arc<Mutex<SqliteStorage>>;
+pub type AppState = Arc<gsmem::Context>;
 
 const UI_NOT_BUILT_HTML: &str = r#"<!doctype html>
 <html lang="en">
@@ -74,10 +74,7 @@ pub fn app(state: AppState) -> Router {
 }
 
 pub fn build_state(config: &Config) -> gsmem::Result<AppState> {
-    config.ensure_local_dirs()?;
-    let storage = SqliteStorage::open(&config.db_path)?;
-    storage.init_schema()?;
-    Ok(Arc::new(Mutex::new(storage)))
+    Ok(Arc::new(gsmem::Context::open(config)?))
 }
 
 pub async fn run() -> Result<(), AppError> {

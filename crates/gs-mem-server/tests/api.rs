@@ -6,11 +6,11 @@ use serde_json::{json, Value};
 use tower::ServiceExt;
 
 use gs_mem_server::app;
-use gsmem::{Config, SqliteStorage};
+use gsmem::{Config, Context, SqliteStorage};
 
 static ENV_LOCK: Mutex<()> = Mutex::new(());
 
-fn test_state() -> (tempfile::TempDir, Arc<Mutex<SqliteStorage>>) {
+fn test_state() -> (tempfile::TempDir, Arc<Context>) {
     let _guard = ENV_LOCK.lock().expect("env lock");
     let original = std::env::var_os("IMMORTAL_GMEM_DATA_DIR");
     let temp = tempfile::tempdir().expect("tempdir");
@@ -26,7 +26,10 @@ fn test_state() -> (tempfile::TempDir, Arc<Mutex<SqliteStorage>>) {
         None => std::env::remove_var("IMMORTAL_GMEM_DATA_DIR"),
     }
 
-    (temp, Arc::new(Mutex::new(storage)))
+    (
+        temp,
+        Arc::new(Context::storage_only(Arc::new(Mutex::new(storage)))),
+    )
 }
 
 async fn json_body(response: axum::response::Response) -> Value {

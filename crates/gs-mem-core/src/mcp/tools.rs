@@ -1,11 +1,9 @@
 //! MCP tool handlers for immortal-gmem.
 
-use std::sync::{Arc, Mutex};
-
 use serde_json::{json, Value};
 
+use crate::context::Context;
 use crate::error::{GmemError, Result};
-use crate::storage::SqliteStorage;
 
 /// Return the list of MCP tool descriptors (for `tools/list`).
 pub fn list() -> Value {
@@ -55,7 +53,7 @@ pub fn list() -> Value {
         },
         {
             "name": "gmem.search",
-            "description": "Keyword search (SQL LIKE) over title + compiled_truth.",
+            "description": "Hybrid search over pages; falls back to keyword-only when no embedder is available.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -105,7 +103,7 @@ pub fn list() -> Value {
 }
 
 /// Dispatch a `tools/call` request.
-pub fn call(storage: &Arc<Mutex<SqliteStorage>>, params: &Value) -> Result<Value> {
+pub fn call(ctx: &Context, params: &Value) -> Result<Value> {
     let name = params
         .get("name")
         .and_then(Value::as_str)
@@ -116,13 +114,13 @@ pub fn call(storage: &Arc<Mutex<SqliteStorage>>, params: &Value) -> Result<Value
         .unwrap_or_else(|| Value::Object(Default::default()));
 
     let raw = match name {
-        "gmem.get_page" => crate::tools::dispatch_tool(storage, "get_page", &args)?,
-        "gmem.put_page" => crate::tools::dispatch_tool(storage, "put_page", &args)?,
-        "gmem.list_pages" => crate::tools::dispatch_tool(storage, "list_pages", &args)?,
-        "gmem.search" => crate::tools::dispatch_tool(storage, "search", &args)?,
-        "gmem.backlinks" => crate::tools::dispatch_tool(storage, "backlinks", &args)?,
-        "gmem.triples_add" => crate::tools::dispatch_tool(storage, "triples_add", &args)?,
-        "gmem.triples_find" => crate::tools::dispatch_tool(storage, "triples_find", &args)?,
+        "gmem.get_page" => crate::tools::dispatch_tool(ctx, "get_page", &args)?,
+        "gmem.put_page" => crate::tools::dispatch_tool(ctx, "put_page", &args)?,
+        "gmem.list_pages" => crate::tools::dispatch_tool(ctx, "list_pages", &args)?,
+        "gmem.search" => crate::tools::dispatch_tool(ctx, "search", &args)?,
+        "gmem.backlinks" => crate::tools::dispatch_tool(ctx, "backlinks", &args)?,
+        "gmem.triples_add" => crate::tools::dispatch_tool(ctx, "triples_add", &args)?,
+        "gmem.triples_find" => crate::tools::dispatch_tool(ctx, "triples_find", &args)?,
         _ => return Err(GmemError::Mcp(format!("unknown tool: {name}"))),
     };
     let text = serde_json::to_string(&raw)?;
@@ -137,6 +135,8 @@ pub fn call(storage: &Arc<Mutex<SqliteStorage>>, params: &Value) -> Result<Value
 mod tests {
     use super::*;
     use std::sync::{Arc, Mutex};
+
+    use crate::storage::SqliteStorage;
 
     #[test]
     fn tools_list_returns_seven() {
@@ -162,9 +162,10 @@ mod tests {
         let storage = SqliteStorage::open(temp.path()).expect("open storage");
         storage.init_schema().expect("init schema");
         let storage = Arc::new(Mutex::new(storage));
+        let ctx = Context::storage_only(storage);
 
         let put_resp = call(
-            &storage,
+            &ctx,
             &json!({
                 "name": "gmem.put_page",
                 "arguments": {
@@ -177,7 +178,7 @@ mod tests {
         assert_eq!(put_resp["content"][0]["type"], "text");
 
         let backlinks_resp = call(
-            &storage,
+            &ctx,
             &json!({
                 "name": "gmem.backlinks",
                 "arguments": {
@@ -195,7 +196,7 @@ mod tests {
         assert_eq!(backlinks_json[0]["from_slug"], "alpha");
 
         let add_resp = call(
-            &storage,
+            &ctx,
             &json!({
                 "name": "gmem.triples_add",
                 "arguments": {
@@ -212,7 +213,7 @@ mod tests {
         assert!(add_json["id"].as_i64().unwrap_or_default() > 0);
 
         let find_resp = call(
-            &storage,
+            &ctx,
             &json!({
                 "name": "gmem.triples_find",
                 "arguments": {

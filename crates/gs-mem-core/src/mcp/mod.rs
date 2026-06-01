@@ -9,14 +9,13 @@
 //! more auditable.
 
 use std::io::{self, BufRead, Write};
-use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use crate::config::Config;
+use crate::context::Context;
 use crate::error::{GmemError, Result};
-use crate::storage::SqliteStorage;
 
 pub mod tools;
 
@@ -50,9 +49,7 @@ struct RpcError {
 
 /// Run an MCP server on stdin/stdout until EOF. Blocking.
 pub fn serve_stdio(config: Config) -> Result<()> {
-    let storage = SqliteStorage::open(&config.db_path)?;
-    storage.init_schema()?;
-    let storage = Arc::new(Mutex::new(storage));
+    let ctx = Context::open(&config)?;
 
     let stdin = io::stdin();
     let stdout = io::stdout();
@@ -92,7 +89,7 @@ pub fn serve_stdio(config: Config) -> Result<()> {
 
         let is_notification = req.id.is_none();
         let id = req.id.clone().unwrap_or(Value::Null);
-        let result = dispatch(&storage, &req.method, &req.params);
+        let result = dispatch(&ctx, &req.method, &req.params);
 
         if is_notification {
             continue;
@@ -135,7 +132,7 @@ fn error_code(err: &GmemError) -> i32 {
     }
 }
 
-fn dispatch(storage: &Arc<Mutex<SqliteStorage>>, method: &str, params: &Value) -> Result<Value> {
+fn dispatch(ctx: &Context, method: &str, params: &Value) -> Result<Value> {
     match method {
         "initialize" => Ok(json!({
             "protocolVersion": PROTOCOL_VERSION,
@@ -147,7 +144,7 @@ fn dispatch(storage: &Arc<Mutex<SqliteStorage>>, method: &str, params: &Value) -
         })),
         "initialized" | "notifications/initialized" => Ok(Value::Null),
         "tools/list" => Ok(json!({ "tools": tools::list() })),
-        "tools/call" => tools::call(storage, params),
+        "tools/call" => tools::call(ctx, params),
         "ping" => Ok(json!({})),
         _ => Err(GmemError::Mcp(format!("unknown method: {method}"))),
     }

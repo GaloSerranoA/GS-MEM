@@ -131,12 +131,16 @@ impl SovereignEmbedder {
             .iter()
             .find(|dir| dir.join("minilm-l6-v2.sovereign").exists())
             .cloned()
-            .unwrap_or_else(|| {
-                candidates
-                    .last()
-                    .cloned()
-                    .unwrap_or_else(|| PathBuf::from("models"))
-            });
+            .ok_or_else(|| {
+                let searched = candidates
+                    .iter()
+                    .map(|dir| dir.display().to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                GmemError::Embedding(format!(
+                    "sovereign model minilm-l6-v2.sovereign not found; searched: {searched}"
+                ))
+            })?;
         Ok(Self::new(
             chosen.join("minilm-l6-v2.sovereign"),
             chosen.join("minilm-l6-v2.sovereign-tokenizer"),
