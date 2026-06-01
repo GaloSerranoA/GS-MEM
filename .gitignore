@@ -5,7 +5,8 @@
 
 # Frontend (React + Vite)
 /frontend/node_modules
-/frontend/dist
+/frontend/dist/*
+!/frontend/dist/.gitkeep
 /frontend/.vite
 
 # Local runtime data (SQLite brain + tantivy index)

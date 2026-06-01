@@ -2,11 +2,13 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 
+use axum::body::Body;
 use axum::extract::{Path, Query, State};
-use axum::http::StatusCode;
+use axum::http::{header, Method, Request, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::get;
 use axum::{Json, Router};
+use rust_embed::RustEmbed;
 use serde_json::{json, Map, Value};
 use thiserror::Error;
 use tokio::net::TcpListener;
@@ -17,6 +19,20 @@ use tracing_subscriber::EnvFilter;
 use gsmem::{Config, GmemError, SqliteStorage};
 
 pub type AppState = Arc<Mutex<SqliteStorage>>;
+
+const UI_NOT_BUILT_HTML: &str = r#"<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>GS-MEM</title></head>
+<body><main><h1>GS-MEM UI not built</h1><p>GS-MEM UI not built &mdash; run <code>npm run build</code> in <code>frontend/</code>.</p></main></body>
+</html>"#;
+
+#[derive(RustEmbed)]
+// Path is resolved relative to this crate's manifest dir (crates/gs-mem-server),
+// so this points at <repo>/frontend/dist. The folder must exist at compile time
+// (a committed .gitkeep guarantees that); run `npm run build` in frontend/ to
+// embed the real UI.
+#[folder = "../../frontend/dist"]
+struct UiAssets;
 
 #[derive(Debug, Error)]
 pub enum AppError {
@@ -51,6 +67,7 @@ pub fn app(state: AppState) -> Router {
         .route("/api/search", get(search))
         .route("/api/pages/{slug}/backlinks", get(backlinks))
         .route("/api/triples", get(triples_find).post(triples_add))
+        .fallback(ui_fallback)
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
         .with_state(state)
@@ -168,6 +185,39 @@ async fn triples_add(
     Json(body): Json<Value>,
 ) -> Result<Json<Value>, AppError> {
     dispatch(&state, "triples_add", body)
+}
+
+async fn ui_fallback(request: Request<Body>) -> Response {
+    if request.method() != Method::GET {
+        return StatusCode::METHOD_NOT_ALLOWED.into_response();
+    }
+
+    let path = request.uri().path().trim_start_matches('/');
+    if path == "api" || path.starts_with("api/") {
+        return StatusCode::NOT_FOUND.into_response();
+    }
+
+    let asset_path = if path.is_empty() { "index.html" } else { path };
+    if let Some(asset) = UiAssets::get(asset_path) {
+        return embedded_asset_response(asset_path, asset.data.into_owned());
+    }
+
+    if let Some(index) = UiAssets::get("index.html") {
+        return embedded_asset_response("index.html", index.data.into_owned());
+    }
+
+    html_response(UI_NOT_BUILT_HTML)
+}
+
+fn embedded_asset_response(path: &str, bytes: Vec<u8>) -> Response {
+    let content_type = mime_guess::from_path(path)
+        .first_or_octet_stream()
+        .to_string();
+    ([(header::CONTENT_TYPE, content_type)], bytes).into_response()
+}
+
+fn html_response(html: &'static str) -> Response {
+    ([(header::CONTENT_TYPE, "text/html; charset=utf-8")], html).into_response()
 }
 
 fn dispatch(state: &AppState, name: &str, args: Value) -> Result<Json<Value>, AppError> {

@@ -63,6 +63,34 @@ async fn health_returns_ok() {
 }
 
 #[tokio::test]
+async fn ui_root_returns_html() {
+    let (_temp, state) = test_state();
+    let response = app(state)
+        .oneshot(
+            Request::builder()
+                .uri("/")
+                .body(Body::empty())
+                .expect("request"),
+        )
+        .await
+        .expect("response");
+
+    assert_eq!(response.status(), StatusCode::OK);
+    let content_type = response
+        .headers()
+        .get(header::CONTENT_TYPE)
+        .and_then(|value| value.to_str().ok())
+        .expect("content type");
+    assert!(content_type.starts_with("text/html"));
+
+    let bytes = to_bytes(response.into_body(), usize::MAX)
+        .await
+        .expect("body bytes");
+    let body = String::from_utf8(bytes.to_vec()).expect("html body");
+    assert!(body.contains(r#"<div id="root"></div>"#));
+}
+
+#[tokio::test]
 async fn put_page_then_get_page_returns_same_slug_and_body() {
     let (_temp, state) = test_state();
     let app = app(state);
