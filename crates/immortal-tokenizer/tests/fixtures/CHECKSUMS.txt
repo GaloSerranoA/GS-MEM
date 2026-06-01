@@ -1,0 +1,2 @@
+b8d7d7973b73f37f657dc5588c93abbee50e31e97721116b62101b026539a863 *minilm-l6-v2.sovereign-tokenizer
+4a950bb5b087fd53c19ab17a06fd0e48584c350c7c1028cedc111219fe2a419a *golden_wordpiece.jsonl

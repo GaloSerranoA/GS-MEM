@@ -1,0 +1,44 @@
+[package]
+name = "gs-mem-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "GS-MEM core — sovereign memory primitives: types, fingerprint, structural chunker, BM25+HNSW search, sovereign embedder, bi-temporal knowledge graph, SQLite storage, and an optional JSON-RPC 2.0 MCP server. Extracted from immortal-gmem (NANTAR)."
+
+[lib]
+name = "gsmem"
+
+[dependencies]
+# kernel
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+blake2 = { workspace = true }
+dirs = { workspace = true }
+time = { workspace = true, features = ["serde", "formatting", "parsing"] }
+uuid = { workspace = true }
+
+# index
+tantivy = { workspace = true }
+sha2 = { workspace = true }
+regex = { workspace = true }
+once_cell = { workspace = true }
+immortal-tokenizer = { workspace = true }
+immortal-nn = { workspace = true }
+
+# storage
+rusqlite = { workspace = true }
+walkdir = { workspace = true }
+
+# HNSW seeded RNG
+rand = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+proptest = { workspace = true }
+
+[features]
+default = []
+# Optional JSON-RPC 2.0 stdio MCP server (7 tools). The gs-mem-mcp binary enables this.
+mcp = []

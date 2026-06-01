@@ -1,0 +1,30 @@
+# Rust build output
+/target
+/target*/
+**/target
+
+# Frontend (React + Vite)
+/frontend/node_modules
+/frontend/dist
+/frontend/.vite
+
+# Local runtime data (SQLite brain + tantivy index)
+/data/
+brain.db
+brain.db-shm
+brain.db-wal
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

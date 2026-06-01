@@ -1,0 +1,27 @@
+[package]
+name = "immortal-tokenizer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Sovereign WordPiece tokenizer — inference-only, no regex, no C deps. Vendored into GS-MEM."
+
+[dependencies]
+serde = { workspace = true }
+bincode = { workspace = true }
+unicode-normalization = { workspace = true }
+unicode_categories = { workspace = true }
+
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+serde_json = { workspace = true }
+
+[features]
+default = []
+
+[[bench]]
+name = "encode"
+harness = false

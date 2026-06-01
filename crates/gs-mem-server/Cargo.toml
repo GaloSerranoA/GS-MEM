@@ -1,0 +1,26 @@
+[package]
+name = "gs-mem-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "GS-MEM HTTP server — axum REST API over the gs-mem core. (Web UI embedding is added in M4.)"
+
+[[bin]]
+name = "gs-mem-server"
+path = "src/main.rs"
+
+[dependencies]
+gs-mem-core = { path = "../gs-mem-core" }
+axum = { workspace = true }
+tokio = { workspace = true }
+tower = { workspace = true, features = ["util"] }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

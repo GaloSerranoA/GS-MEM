@@ -1,0 +1,46 @@
+[package]
+name = "immortal-nn"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Sovereign pure-Rust neural inference engine — CPU-only inference. Vendored into GS-MEM for the sovereign embedder (no external API, no GPU runtime)."
+
+[dependencies]
+# CPU-only scheduling. No GPU or external inference runtime.
+rayon = "1.11"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[[test]]
+name = "conv2d_correctness"
+path = "tests/conv/conv2d_correctness.rs"
+
+[[test]]
+name = "conv_proptests"
+path = "tests/conv/conv_proptests.rs"
+
+[[test]]
+name = "rnn_correctness"
+path = "tests/rnn/rnn_correctness.rs"
+
+[[test]]
+name = "rnn_proptests"
+path = "tests/rnn/rnn_proptests.rs"
+
+[[test]]
+name = "transformer_correctness"
+path = "tests/transformer/transformer_correctness.rs"
+
+[[test]]
+name = "transformer_proptests"
+path = "tests/transformer/transformer_proptests.rs"

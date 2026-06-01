@@ -1,0 +1,14 @@
+[package]
+name = "gs-mem-mcp"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "GS-MEM stdio MCP server (JSON-RPC 2.0, protocol 2024-11-05) — drop-in memory tool for Claude Desktop / Claude Code / Codex."
+
+[[bin]]
+name = "gs-mem-mcp"
+path = "src/main.rs"
+
+[dependencies]
+gs-mem-core = { path = "../gs-mem-core", features = ["mcp"] }
