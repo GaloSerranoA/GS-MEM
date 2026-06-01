@@ -14,9 +14,8 @@ edition = "2021"
 authors = ["Galo Serrano Abad <hello@serragi.com>", "NANTAR AI ROBOTICS"]
 license = "AGPL-3.0-only"
 rust-version = "1.75"
-# NOTE: placeholder repo URL — confirm/replace when publishing (M6).
-repository = "https://github.com/serragi/gs-mem"
-homepage = "https://github.com/serragi/gs-mem"
+repository = "https://github.com/GaloSerranoA/GS-MEM"
+homepage = "https://github.com/GaloSerranoA/GS-MEM"
 
 [workspace.dependencies]
 # --- vendored sovereign crates (formerly NANTAR siblings) ---

@@ -4,7 +4,7 @@
 bi-temporal knowledge graph, full-text search, an MCP server for AI agents, an
 HTTP REST API, and a web UI — all in pure Rust, offline, with no external API.
 
-> Extracted from the [NANTAR](https://github.com/serragi) framework's
+> Extracted from the [NANTAR](https://github.com/GaloSerranoA) framework's
 > `immortal-gmem` crate into a standalone project.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
