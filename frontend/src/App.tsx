@@ -1,4 +1,12 @@
-import { type ComponentType, type FormEvent, useEffect, useMemo, useState } from 'react'
+import {
+  type ComponentType,
+  type FormEvent,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import ReactMarkdown from 'react-markdown'
 import { HashRouter, Link, NavLink, Route, Routes, useParams } from 'react-router-dom'
 import type { ForceGraphProps } from 'react-force-graph-2d'
@@ -44,9 +52,28 @@ type ForceGraphComponent = ComponentType<ForceGraphProps<GraphNode, GraphLink>>
 const DEFAULT_PAGE_LIMIT = 100
 const DEFAULT_SEARCH_LIMIT = 20
 
+type Theme = 'light' | 'dark'
+
+const ThemeContext = createContext<Theme>('light')
+
+function readInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'light'
+  const saved = window.localStorage.getItem('gsmem-theme')
+  if (saved === 'light' || saved === 'dark') return saved
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export default function App() {
+  const [theme, setTheme] = useState<Theme>(readInitialTheme)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    window.localStorage.setItem('gsmem-theme', theme)
+  }, [theme])
+
   return (
-    <HashRouter>
+    <ThemeContext.Provider value={theme}>
+      <HashRouter>
       <div className="app-shell">
         <header className="app-header">
           <Link className="brand" to="/">
@@ -57,6 +84,15 @@ export default function App() {
               Pages
             </NavLink>
             <NavLink to="/graph">Graph</NavLink>
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={() => setTheme((value) => (value === 'dark' ? 'light' : 'dark'))}
+              aria-label="Toggle dark mode"
+              title="Toggle dark mode"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
           </nav>
         </header>
         <Routes>
@@ -72,7 +108,8 @@ export default function App() {
           <span className="app-footer-org">NANTAR AI ROBOTICS</span>
         </footer>
       </div>
-    </HashRouter>
+      </HashRouter>
+    </ThemeContext.Provider>
   )
 }
 
@@ -415,6 +452,7 @@ function GraphView() {
 
 function ClientForceGraph({ data }: { data: GraphData }) {
   const [ForceGraph, setForceGraph] = useState<ForceGraphComponent | null>(null)
+  const theme = useContext(ThemeContext)
 
   useEffect(() => {
     let cancelled = false
@@ -437,18 +475,18 @@ function ClientForceGraph({ data }: { data: GraphData }) {
       graphData={data}
       width={900}
       height={520}
-      backgroundColor="#ffffff"
+      backgroundColor={theme === 'dark' ? '#0f1626' : '#ffffff'}
       nodeId="id"
       nodeLabel="label"
       nodeColor={(node) =>
         node.kind === 'both' ? '#8b5cf6' : node.kind === 'subject' ? '#6366f1' : '#14b8a6'
       }
-      linkColor={() => '#c7cdda'}
+      linkColor={() => (theme === 'dark' ? '#4b5573' : '#c7cdda')}
       linkDirectionalArrowLength={5}
       linkDirectionalArrowRelPos={1}
       linkLabel={(link) => link.predicate}
       linkCanvasObjectMode={() => 'after'}
-      linkCanvasObject={drawLinkLabel}
+      linkCanvasObject={(link, ctx, scale) => drawLinkLabel(link, ctx, scale, theme)}
     />
   )
 }
@@ -532,7 +570,12 @@ function emptyGraph(): GraphData {
   return { nodes: [], links: [] }
 }
 
-function drawLinkLabel(link: GraphLink, context: CanvasRenderingContext2D, globalScale: number) {
+function drawLinkLabel(
+  link: GraphLink,
+  context: CanvasRenderingContext2D,
+  globalScale: number,
+  theme: Theme,
+) {
   const source = positionedNode(link.source)
   const target = positionedNode(link.target)
   if (!source || !target) return
@@ -545,9 +588,9 @@ function drawLinkLabel(link: GraphLink, context: CanvasRenderingContext2D, globa
 
   context.save()
   context.font = `${fontSize}px system-ui, sans-serif`
-  context.fillStyle = 'rgba(255, 255, 255, 0.88)'
+  context.fillStyle = theme === 'dark' ? 'rgba(15, 22, 38, 0.9)' : 'rgba(255, 255, 255, 0.88)'
   context.fillRect(x - textWidth / 2 - padding, y - fontSize, textWidth + padding * 2, fontSize * 1.35)
-  context.fillStyle = '#334155'
+  context.fillStyle = theme === 'dark' ? '#c7d2fe' : '#334155'
   context.textAlign = 'center'
   context.textBaseline = 'middle'
   context.fillText(link.predicate, x, y - fontSize * 0.25)
