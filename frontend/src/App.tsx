@@ -65,15 +65,11 @@ export default function App() {
           <Route path="/graph" element={<GraphView />} />
           <Route path="*" element={<NotFoundView />} />
         </Routes>
-        <footer
-          style={{
-            textAlign: 'center',
-            padding: '2rem 1rem 3rem',
-            color: '#6b7280',
-            fontSize: '0.85rem',
-          }}
-        >
-          Created by Galo Serrano Abad · NANTAR AI ROBOTICS
+        <footer className="app-footer">
+          <span>
+            Created by <strong>Galo Serrano Abad</strong>
+          </span>
+          <span className="app-footer-org">NANTAR AI ROBOTICS</span>
         </footer>
       </div>
     </HashRouter>
@@ -190,7 +186,9 @@ function PagesListView() {
                           <Link to={`/page/${encodeURIComponent(page.slug)}`}>{page.slug}</Link>
                         </td>
                         <td>{page.title || 'Untitled'}</td>
-                        <td>{page.scope || 'default'}</td>
+                        <td>
+                          <ScopeBadge scope={page.scope} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -274,7 +272,9 @@ function PageDetailView() {
                   Pages
                 </Link>
                 <h1>{data.title || data.slug}</h1>
-                <p>{data.slug}</p>
+                <p>
+                  {data.slug} <ScopeBadge scope={data.scope} />
+                </p>
               </div>
               <button type="button" onClick={() => setIsEditing((value) => !value)}>
                 {isEditing ? 'Cancel' : 'Edit'}
@@ -441,9 +441,9 @@ function ClientForceGraph({ data }: { data: GraphData }) {
       nodeId="id"
       nodeLabel="label"
       nodeColor={(node) =>
-        node.kind === 'both' ? '#44546f' : node.kind === 'subject' ? '#2563eb' : '#0f766e'
+        node.kind === 'both' ? '#8b5cf6' : node.kind === 'subject' ? '#6366f1' : '#14b8a6'
       }
-      linkColor={() => '#8a96a8'}
+      linkColor={() => '#c7cdda'}
       linkDirectionalArrowLength={5}
       linkDirectionalArrowRelPos={1}
       linkLabel={(link) => link.predicate}
@@ -475,6 +475,11 @@ function ErrorState({ message }: { message: string }) {
 
 function EmptyState({ message }: { message: string }) {
   return <p className="state-text empty">{message}</p>
+}
+
+function ScopeBadge({ scope }: { scope?: string | null }) {
+  const value = scope || 'default'
+  return <span className={`badge badge-${value}`}>{value}</span>
 }
 
 function JsonPanel({ title, value }: { title: string; value: unknown }) {
