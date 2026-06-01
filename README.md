@@ -9,6 +9,8 @@ HTTP REST API, and a web UI — all in pure Rust, offline, with no external API.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
+**Created by Galo Serrano Abad — NANTAR AI ROBOTICS.**
+
 ## What it is
 
 GS-MEM stores durable **pages** (compiled markdown knowledge) and **SPO triples**

@@ -65,6 +65,16 @@ export default function App() {
           <Route path="/graph" element={<GraphView />} />
           <Route path="*" element={<NotFoundView />} />
         </Routes>
+        <footer
+          style={{
+            textAlign: 'center',
+            padding: '2rem 1rem 3rem',
+            color: '#6b7280',
+            fontSize: '0.85rem',
+          }}
+        >
+          Created by Galo Serrano Abad · NANTAR AI ROBOTICS
+        </footer>
       </div>
     </HashRouter>
   )

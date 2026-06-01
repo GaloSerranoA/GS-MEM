@@ -35,7 +35,7 @@ company-size tiers).
 
 ---
 
-Copyright © 2026 Galo Serrano Abad. AGPL-3.0-only is the open-source option; all
+Copyright © 2026 Galo Serrano Abad (NANTAR AI ROBOTICS). AGPL-3.0-only is the open-source option; all
 rights not granted by the AGPL are reserved and available under separate commercial
 terms. "GS-MEM" and associated branding are not licensed for use except as needed to
 identify the software.

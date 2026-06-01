@@ -11,7 +11,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["Galo Serrano Abad <hello@serragi.com>"]
+authors = ["Galo Serrano Abad <hello@serragi.com>", "NANTAR AI ROBOTICS"]
 license = "AGPL-3.0-only"
 rust-version = "1.75"
 # NOTE: placeholder repo URL — confirm/replace when publishing (M6).
