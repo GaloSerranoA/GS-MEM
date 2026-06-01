@@ -1,0 +1,38 @@
+GS-MEM
+Copyright (c) 2026 Galo Serrano Abad
+
+This product is licensed under the GNU Affero General Public License v3.0
+(see LICENSE).
+
+================================================================================
+Bundled model weights
+================================================================================
+
+The sovereign embedder ships converted weights of MiniLM-L6-v2:
+
+  sentence-transformers/all-MiniLM-L6-v2
+  Licensed under Apache License 2.0.
+  https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+
+The original weights were converted to GS-MEM's `.sovereign` format
+(models/sovereign/). The Apache-2.0 license and attribution of the upstream
+model are retained.
+
+================================================================================
+Vendored crates
+================================================================================
+
+The following crates were originally developed as part of the NANTAR framework
+by Galo Serrano Abad and are vendored here, relicensed under AGPL-3.0-only as
+part of GS-MEM:
+
+  - immortal-nn          (crates/immortal-nn)       — pure-Rust CPU inference
+  - immortal-tokenizer   (crates/immortal-tokenizer) — WordPiece tokenizer
+
+================================================================================
+Third-party dependencies
+================================================================================
+
+GS-MEM depends on third-party crates (tantivy, rusqlite, axum, serde, rayon,
+and others) distributed under their own permissive licenses (MIT / Apache-2.0).
+See `cargo tree` and each crate's repository for details.
