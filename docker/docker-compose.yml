@@ -1,0 +1,32 @@
+# GS-MEM — self-hosted HTTP server + web UI.
+#   docker compose -f docker/docker-compose.yml up --build
+# Then open http://localhost:8088
+services:
+  gs-mem:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: gs-mem:latest
+    ports:
+      - "8088:8088"
+    environment:
+      IMMORTAL_GMEM_DATA_DIR: /data
+      IMMORTAL_GMEM_MODEL_DIR: /models/sovereign
+      GS_MEM_PORT: "8088"
+      RUST_LOG: gs_mem_server=info
+    volumes:
+      # Persistent brain.db + tantivy index.
+      - gs-mem-data:/data
+      # MiniLM weights (Git LFS) — read-only. Only needed if/when the sovereign
+      # embedder is wired into a tool; the default 7 tools run without it.
+      - ../models:/models:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8088/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  gs-mem-data:

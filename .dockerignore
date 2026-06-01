@@ -1,0 +1,13 @@
+# Keep the build context small + correct (the Dockerfile rebuilds the UI and
+# the Rust target inside the image).
+target
+**/target
+frontend/node_modules
+frontend/dist
+frontend/.vite
+.git
+.github
+docs
+# Model weights are mounted at runtime, not baked into the image.
+models
+*.log
