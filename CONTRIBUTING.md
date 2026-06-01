@@ -43,4 +43,16 @@ npm run dev --prefix frontend       # dev server, proxies /api → :8088
 3. Ensure `cargo nextest run --workspace` and the frontend build pass.
 4. Describe the change and link any relevant issue.
 
-By contributing you agree your contributions are licensed under AGPL-3.0-only.
+## Contributor licensing
+
+GS-MEM is dual-licensed (AGPL-3.0 **and** a commercial license — see
+[LICENSING.md](LICENSING.md)). To keep that sustainable, by submitting a
+contribution you agree that:
+
+1. your contribution is provided under **AGPL-3.0-only**; **and**
+2. you grant the project's copyright holder (Galo Serrano Abad) a perpetual,
+   irrevocable, worldwide, royalty-free right to **also** license your contribution
+   under other terms, including the **commercial license**.
+
+You retain copyright to your contribution. If you cannot grant (2), please say so in
+your pull request so it can be handled separately.

@@ -118,5 +118,11 @@ Please keep new core code compliant.
 
 ## License
 
-[AGPL-3.0-only](LICENSE). Model weights and vendored components are attributed in
-[NOTICE](NOTICE).
+GS-MEM is **dual-licensed** — see [LICENSING.md](LICENSING.md):
+
+- **[AGPL-3.0-only](LICENSE)** — free & open source. Self-host, modify, and
+  redistribute under the AGPL's copyleft + network-source-disclosure terms.
+- **Commercial license** — for closed-source/proprietary or SaaS use without AGPL
+  obligations. Contact **hello@serragi.com**.
+
+Model weights and vendored components are attributed in [NOTICE](NOTICE).

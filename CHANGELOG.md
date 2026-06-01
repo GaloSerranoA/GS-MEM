@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Dual-licensed:** AGPL-3.0-only (open source) **or** a paid commercial license for
+  closed-source / SaaS use without AGPL obligations. See [LICENSING.md](LICENSING.md).
+
 ### Fixed
 
 - **Sovereign embedder now produces semantically-correct embeddings.** The shipped
