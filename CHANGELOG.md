@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Sovereign embedder now produces semantically-correct embeddings.** The shipped
+  `minilm-l6-v2.sovereign` was re-converted from the legacy
+  `sequence_classifier_transformer` architecture (which lacks positional/token-type
+  embeddings and the embedding LayerNorm, breaking semantic ranking) to
+  `xlm_roberta_encoder`. Hybrid/vector search now ranks by meaning — e.g. a query
+  with no shared keywords surfaces the relevant page first.
+
 ## [0.1.0] - 2026-05-31
 
 Initial standalone release — extracted from the NANTAR framework's
